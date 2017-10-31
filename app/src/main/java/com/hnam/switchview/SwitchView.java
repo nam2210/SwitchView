@@ -3,7 +3,10 @@ package com.hnam.switchview;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 
 /**
@@ -61,7 +64,7 @@ public class SwitchView extends RelativeLayout{
         getContainer().post(new Runnable() {
             @Override
             public void run() {
-                moveTouchListener = new MoveTouchListener(getIndicator(), getContainer().getHeight());
+                moveTouchListener = new MoveTouchListener(getContainer(), getIndicator());
                 moveTouchListener.setCallback(callback);
                 getIndicator().setOnTouchListener(moveTouchListener);
                 moveIndicator();
@@ -83,6 +86,41 @@ public class SwitchView extends RelativeLayout{
         @Override
         public void onDoNotChangePosition() {
 
+        }
+
+
+        @Override
+        public void onScaleUp(float scale) {
+            SwitchView.this.setPivotY(getHeight());
+            SwitchView.this.animate()
+                    .scaleY(1 + scale )
+                    .scaleX(1 - scale)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .setDuration(150)
+                    .start();
+        }
+
+
+
+        @Override
+        public void onScaleDown(float scale) {
+            SwitchView.this.setPivotY(0);
+            SwitchView.this.animate()
+                    .scaleY(1 + scale )
+                    .scaleX(1 - scale)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .setDuration(150)
+                    .start();
+        }
+
+        @Override
+        public void onNormal() {
+            SwitchView.this.animate()
+                    .scaleY(1)
+                    .scaleX(1)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .setDuration(500)
+                    .start();
         }
     };
 

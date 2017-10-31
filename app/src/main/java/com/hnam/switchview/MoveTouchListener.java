@@ -3,7 +3,6 @@ package com.hnam.switchview;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 
@@ -17,16 +16,25 @@ public class MoveTouchListener implements View.OnTouchListener {
     private float currentY;
     private final int length;
     private int threshold;
-    private int top;
 
-    public MoveTouchListener(View v, int length) {
-        currentX = v.getX();
-        currentY = v.getY();
+    private int top; //position of indicator when it is align top edge
+    private int bottom; // position of indicator when it is align bottom edge
 
-        this.length = length;
+    private View container;
+
+
+    public MoveTouchListener(View container, View indicator) {
+        currentX = indicator.getX();
+        currentY = indicator.getY();
+
+        this.container = container;
+        this.length = container.getHeight();
         this.threshold = length / 4;
-        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) v.getLayoutParams();
+
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) indicator.getLayoutParams();
         this.top = lp.topMargin;
+        this.bottom = length - indicator.getHeight() - top;
+
     }
 
     OnMoveTouchCallback callback;
@@ -49,16 +57,20 @@ public class MoveTouchListener implements View.OnTouchListener {
                 break;
             case MotionEvent.ACTION_MOVE:
                 //check when user gesture down
-                if (v.getY() < top || v.getY() > (length - v.getHeight() - top)) {
-
+                float y = event.getRawY() + dY;
+                if (y > top && y < bottom){
+                    v.animate()
+                            .x(currentX)
+                            .y(y)
+                            .setDuration(0)
+                            .start();
                 } else {
-                    float y = event.getRawY() + dY;
-                    if (dY != event.getRawY()) {
-                        v.animate()
-                                .x(currentX)
-                                .y(y)
-                                .setDuration(0)
-                                .start();
+                    if (y >= 0 && y < bottom){
+                        float scale = (top - y) / v.getHeight();
+                        callback.onScaleUp(scale);
+                    } else if (y <= (bottom + (top)) && y > top){
+                        float scale = (y - bottom) / v.getHeight();
+                        callback.onScaleDown(scale);
                     }
                 }
                 break;
@@ -72,7 +84,7 @@ public class MoveTouchListener implements View.OnTouchListener {
                             .start();
                     callback.onDoNotChangePosition();
                 } else {
-                    currentY = currentY != top ? top : (length - v.getHeight() - top);
+                    currentY = currentY != top ? top : bottom;
                     v.animate()
                             .x(currentX)
                             .y(currentY)
@@ -81,30 +93,27 @@ public class MoveTouchListener implements View.OnTouchListener {
                             .start();
                     callback.onChangePosition();
                 }
-
+                callback.onNormal();
 
                 break;
             default: {
-                Log.e(TAG, "action default");
                 if (Math.abs(v.getY() - currentY) <= threshold) {
                     v.animate()
                             .x(currentX)
                             .y(currentY)
-                            .setDuration(400)
-                            .setInterpolator(new AccelerateDecelerateInterpolator())
+                            .setDuration(300)
+                            .setInterpolator(new LinearInterpolator())
                             .start();
                     callback.onDoNotChangePosition();
                 } else {
-                    //currentY = currentY != 0 ? 0 : length - v.getHeight();
-                    currentY = currentY != 0 ? v.getPaddingTop() : length - v.getHeight() - v.getPaddingTop();
+                    currentY = currentY != top ? top : bottom;
                     v.animate()
                             .x(currentX)
                             .y(currentY)
-                            .setDuration(400)
-                            .setInterpolator(new AccelerateDecelerateInterpolator())
+                            .setDuration(300)
+                            .setInterpolator(new LinearInterpolator())
                             .start();
                     callback.onChangePosition();
-
                 }
                 return true;
             }
@@ -118,5 +127,11 @@ public class MoveTouchListener implements View.OnTouchListener {
         void onChangePosition();
 
         void onDoNotChangePosition();
+
+        void onScaleUp(float scale);
+
+        void onScaleDown(float scale);
+
+        void onNormal();
     }
 }
