@@ -22,7 +22,7 @@ public class MoveTouchListener implements View.OnTouchListener {
     public MoveTouchListener(View v, int length) {
         currentX = v.getX();
         currentY = v.getY();
-        Log.e(TAG,"x: " + currentX + " y: " + currentY + " height:" + length);
+
         this.length = length;
         this.threshold = length / 4;
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) v.getLayoutParams();
@@ -35,7 +35,7 @@ public class MoveTouchListener implements View.OnTouchListener {
         this.callback = callback;
     }
 
-    float dX, dY;
+    private float dX, dY;
 
     //JUST MOVE LEFT AND RIGHT
     @Override
@@ -49,12 +49,18 @@ public class MoveTouchListener implements View.OnTouchListener {
                 break;
             case MotionEvent.ACTION_MOVE:
                 //check when user gesture down
-                v.animate()
-                        .x(currentX)
-                        .y(event.getRawY() + dY)
-                        .setDuration(0)
-                        .start();
+                if (v.getY() < top || v.getY() > (length - v.getHeight() - top)) {
 
+                } else {
+                    float y = event.getRawY() + dY;
+                    if (dY != event.getRawY()) {
+                        v.animate()
+                                .x(currentX)
+                                .y(y)
+                                .setDuration(0)
+                                .start();
+                    }
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 if (Math.abs(v.getY() - currentY) <= threshold) {
