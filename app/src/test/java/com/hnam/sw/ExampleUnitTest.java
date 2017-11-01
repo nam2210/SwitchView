@@ -1,4 +1,4 @@
-package com.hnam.switchview;
+package com.hnam.sw;
 
 import org.junit.Test;
 

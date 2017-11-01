@@ -1,4 +1,4 @@
-package com.hnam.switchview;
+package com.hnam.sw;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
