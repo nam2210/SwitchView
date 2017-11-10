@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         final SwitchView sw = findViewById(R.id.sw);
         Button btn = findViewById(R.id.btn);
-        sw.setEnable(true);
+        sw.setEnable(false);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

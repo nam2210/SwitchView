@@ -1,6 +1,5 @@
 package com.hnam.switchview;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -34,13 +33,18 @@ public class MoveTouchListener implements View.OnTouchListener {
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) indicator.getLayoutParams();
         this.top = lp.topMargin;
         this.bottom = length - indicator.getHeight() - top;
-
     }
+
+
 
     OnMoveTouchCallback callback;
 
     public void setCallback(OnMoveTouchCallback callback) {
         this.callback = callback;
+    }
+
+    public void updateCurrentPositionOfIndicator(View indicator){
+        this.currentY = indicator.getY();
     }
 
     private float dX, dY;

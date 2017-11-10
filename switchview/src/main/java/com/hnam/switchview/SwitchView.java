@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 
 /**
  * Created by nampham on 10/26/17.
+ * this switch like switch in home app - iOS
  */
 
 public class SwitchView extends RelativeLayout{
@@ -79,6 +80,9 @@ public class SwitchView extends RelativeLayout{
         @Override
         public void onChangePosition() {
             isEnable = !isEnable;
+            if (listener != null){
+                listener.onChangeStatus(isEnable);
+            }
         }
 
         @Override
@@ -142,6 +146,15 @@ public class SwitchView extends RelativeLayout{
             getIndicator().setX(x);
             getIndicator().setY(height - getIndicator().getHeight() - top);
         }
+        moveTouchListener.updateCurrentPositionOfIndicator(getIndicator());
+    }
 
+    public void setSwitchChangeListener(OnSwitchChangeListener listener){
+        this.listener = listener;
+    }
+
+    private OnSwitchChangeListener listener;
+    public interface OnSwitchChangeListener {
+        void onChangeStatus(boolean status);
     }
 }
