@@ -1,1 +1,1 @@
-include ':app', ':switchview'
+include ':app', ':switchview', ':tlockview'
