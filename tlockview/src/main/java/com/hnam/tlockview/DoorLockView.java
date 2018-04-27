@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -41,14 +42,26 @@ public class DoorLockView extends RelativeLayout{
     private void init(Context context){
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.door_view, this);
+        Log.e(TAG, "init layout");
+    }
 
+    private int minDimension;
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+        minDimension = Math.min(widthSize, heightSize);
+        Log.e(TAG, "onMeasure>>>>: "+ minDimension);
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-
+        Log.e(TAG, "onFinishInfalte>>>>");
         mBg = (ImageView) findViewById(R.id.iv_bg);
         mIndicator = (View) findViewById(R.id.view_indicator);
 
@@ -59,9 +72,15 @@ public class DoorLockView extends RelativeLayout{
         mBg.setLayoutParams(bgParams);
         mBg.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.bg_lock_shadow));
 
-        LayoutParams tvParams = (LayoutParams) mIndicator.getLayoutParams();
-        tvParams.addRule(CENTER_IN_PARENT);
-        mIndicator.setLayoutParams(tvParams);
+        this.post(new Runnable() {
+            @Override
+            public void run() {
+                LayoutParams tvParams = (LayoutParams) mIndicator.getLayoutParams();
+                tvParams.height = (int) (minDimension * 0.8f);
+                tvParams.addRule(CENTER_IN_PARENT);
+                mIndicator.setLayoutParams(tvParams);
+            }
+        });
 
         mBg.setOnTouchListener(new OnTouchListener() {
             @Override

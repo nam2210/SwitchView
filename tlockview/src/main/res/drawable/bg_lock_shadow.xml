@@ -5,12 +5,13 @@
     <item>
         <shape
             android:shape="ring"
-            android:thickness="2dp">
+            android:thickness="1dp"
+            android:innerRadiusRatio="2.2">
             <padding
-                android:bottom="-1dp"
-                android:left="-1dp"
-                android:right="-1dp"
-                android:top="-1dp" />
+                android:bottom="-0.5dp"
+                android:left="-0.5dp"
+                android:right="-0.5dp"
+                android:top="-0.5dp" />
 
             <solid android:color="#00CCCCCC" />
 
@@ -19,12 +20,12 @@
     <item>
         <shape
             android:shape="ring"
-            android:thickness="2dp">
+            android:thickness="1dp">
             <padding
-                android:bottom="-1dp"
-                android:left="-1dp"
-                android:right="-1dp"
-                android:top="-1dp" />
+                android:bottom="-0.5dp"
+                android:left="-0.5dp"
+                android:right="-0.5dp"
+                android:top="-0.5dp" />
 
             <solid android:color="#10CCCCCC" />
 
@@ -33,7 +34,23 @@
     <item>
         <shape
             android:shape="ring"
-            android:thickness="2dp">
+            android:thickness="1dp"
+            android:innerRadiusRatio="2.2">
+            <padding
+                android:bottom="-0.5dp"
+                android:left="-0.5dp"
+                android:right="-0.5dp"
+                android:top="-0.5dp" />
+
+            <solid android:color="#20CCCCCC" />
+
+        </shape>
+    </item>
+    <item>
+        <shape
+            android:shape="ring"
+            android:thickness="4dp"
+            android:innerRadiusRatio="2.2">
             <padding
                 android:bottom="-2dp"
                 android:left="-2dp"
@@ -47,28 +64,15 @@
     <item>
         <shape
             android:shape="ring"
-            android:thickness="3dp">
+            android:thickness="4dp"
+            android:innerRadiusRatio="2.2">
             <padding
-                android:bottom="-3dp"
-                android:left="-3dp"
-                android:right="-3dp"
-                android:top="-3dp" />
+                android:bottom="-4dp"
+                android:left="-4dp"
+                android:right="-4dp"
+                android:top="-4dp" />
 
-            <solid android:color="#30CCCCCC" />
-
-        </shape>
-    </item>
-    <item>
-        <shape
-            android:shape="ring"
-            android:thickness="4dp">
-            <padding
-                android:bottom="-3dp"
-                android:left="-3dp"
-                android:right="-3dp"
-                android:top="-3dp" />
-
-            <solid android:color="#BBCCCCCC" />
+            <solid android:color="#EECCCCCC" />
 
         </shape>
     </item>
@@ -77,7 +81,8 @@
     <item>
         <shape
             android:shape="ring"
-            android:thickness="2dp">
+            android:thickness="2dp"
+            android:innerRadiusRatio="2.2">
             <solid android:color="@color/colorPrimary" />
         </shape>
     </item>
