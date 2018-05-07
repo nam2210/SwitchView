@@ -35,7 +35,7 @@ public class DoorLockView extends RelativeLayout{
         init(context);
     }
 
-    private ImageView mBg;
+    private View mBg;
     private View mIndicator;
     private DoorLockState mState;
 
@@ -62,7 +62,7 @@ public class DoorLockView extends RelativeLayout{
     protected void onFinishInflate() {
         super.onFinishInflate();
         Log.e(TAG, "onFinishInfalte>>>>");
-        mBg = (ImageView) findViewById(R.id.iv_bg);
+        mBg = (View) findViewById(R.id.iv_bg);
         mIndicator = (View) findViewById(R.id.view_indicator);
 
         LayoutParams bgParams = (LayoutParams) mBg.getLayoutParams();
@@ -70,7 +70,7 @@ public class DoorLockView extends RelativeLayout{
         bgParams.height = LayoutParams.MATCH_PARENT;
         bgParams.addRule(CENTER_IN_PARENT);
         mBg.setLayoutParams(bgParams);
-        mBg.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.bg_lock_shadow));
+        mBg.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_lock_shadow_1));
 
         this.post(new Runnable() {
             @Override
