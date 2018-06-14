@@ -11,6 +11,6 @@
         android:id="@+id/view_indicator"
         android:layout_width="24dp"
         android:layout_height="180dp"
-        android:background="@drawable/bg_indicator_shadow"/>
+        android:background="@drawable/bg_normal_indicator_shadow"/>
 
 </merge>

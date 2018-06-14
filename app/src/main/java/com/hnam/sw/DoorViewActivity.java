@@ -22,13 +22,13 @@ public class DoorViewActivity extends AppCompatActivity {
                 Log.e(TAG, "Door pressed");
             }
         });
-        view.setState(DoorLockState.STATE_UNLOCK);
+        view.setState(DoorLockState.STATE_LOCK);
 
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 isLock = !isLock;
-                view.setStateWithAnimation(isLock ? DoorLockState.STATE_LOCK : DoorLockState.STATE_UNLOCK);
+                view.control(isLock ? DoorLockState.STATE_LOCK : DoorLockState.STATE_UNLOCK);
             }
         });
     }
