@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.hnam.tlockview.DoorLockView
+    <include
         android:id="@+id/doorlock"
+        layout="@layout/door_view"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true" />
 
     <Button
         android:id="@+id/button"

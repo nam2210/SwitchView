@@ -1,5 +1,6 @@
 package com.hnam.tlockview;
 
+import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
@@ -8,54 +9,71 @@ import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.RelativeLayout;
 
 
 import static android.view.MotionEvent.ACTION_UP;
+import static com.hnam.tlockview.DoorLockState.STATE_OFFLINE;
 
 /**
  * Created by nampham on 4/24/18.
  */
 public class DoorLockView extends RelativeLayout{
     private static final String TAG = DoorLockView.class.getSimpleName();
-    public DoorLockView(Context context) {
-        super(context);
-        init(context);
-    }
 
     public DoorLockView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
     }
 
-    public DoorLockView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context);
-    }
+
 
     private View mBg;
     private View mIndicator;
-    private DoorLockState mState;
+    private DoorLockState mState = STATE_OFFLINE;
 
-    private void init(Context context){
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.door_view, this);
-    }
+
 
     private int minDimension;
 
+
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+        //calculate size of background
+        measureChildWithMargins(mBg, widthMeasureSpec, 0, heightMeasureSpec,0);
+        LayoutParams bgParams = (LayoutParams) mBg.getLayoutParams();
+        int width = mBg.getMeasuredWidth() + bgParams.leftMargin + bgParams.rightMargin;
+        int height = mBg.getMeasuredHeight() + bgParams.topMargin + bgParams.bottomMargin;
 
-        minDimension = Math.min(widthSize, heightSize);
+        measureChildWithMargins(mIndicator, widthMeasureSpec, 0, heightMeasureSpec, 0);
+
+        //set how big for customView
+        int size = Math.min(width, height);
+        setMeasuredDimension(resolveSize(size, widthMeasureSpec), resolveSize(size, heightMeasureSpec));
     }
 
-    final ViewGroup mParent = null;
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        //place background view and laid in centerInParent
+        LayoutParams bgLayoutParams = (LayoutParams) mBg.getLayoutParams();
+        int radius = Math.min(mBg.getMeasuredWidth(), mBg.getMeasuredHeight());
+        int left = getPaddingLeft() + bgLayoutParams.leftMargin;
+        int top = (int) (getPivotY() - radius/2 + getPaddingTop() + bgLayoutParams.topMargin);
+        int right = left + radius;
+        int bottom = top + radius;
+
+        mBg.layout(left, top, right, bottom);
+
+        //place stick
+        left = (int) (getPivotX() - mIndicator.getMeasuredWidth()/2);
+        top = (int) ((int) getPivotY() - (radius/2) * 0.8);
+        right = left + mIndicator.getMeasuredWidth();
+        bottom = (int) (top + radius * 0.8);
+
+        mIndicator.layout(left, top, right, bottom);
+
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -64,22 +82,23 @@ public class DoorLockView extends RelativeLayout{
         mBg = (View) findViewById(R.id.iv_bg);
         mIndicator = (View) findViewById(R.id.view_indicator);
 
-        LayoutParams bgParams = (LayoutParams) mBg.getLayoutParams();
-        bgParams.width = LayoutParams.MATCH_PARENT;
-        bgParams.height = LayoutParams.MATCH_PARENT;
-        bgParams.addRule(CENTER_IN_PARENT);
-        mBg.setLayoutParams(bgParams);
-        mBg.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_normal_circle));
+//        LayoutParams bgParams = (LayoutParams) mBg.getLayoutParams();
+//        bgParams.width = LayoutParams.MATCH_PARENT;
+//        bgParams.height = LayoutParams.MATCH_PARENT;
+//        bgParams.addRule(CENTER_IN_PARENT);
+//        mBg.setLayoutParams(bgParams);
+//        mBg.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_gray_circle));
+//
+//        this.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                LayoutParams tvParams = (LayoutParams) mIndicator.getLayoutParams();
+//                tvParams.height = (int) (minDimension * 0.8f);
+//                tvParams.addRule(CENTER_IN_PARENT);
+//                mIndicator.setLayoutParams(tvParams);
+//            }
+//        });
 
-        this.post(new Runnable() {
-            @Override
-            public void run() {
-                LayoutParams tvParams = (LayoutParams) mIndicator.getLayoutParams();
-                tvParams.height = (int) (minDimension * 0.8f);
-                tvParams.addRule(CENTER_IN_PARENT);
-                mIndicator.setLayoutParams(tvParams);
-            }
-        });
 
         mBg.setOnTouchListener(new OnTouchListener() {
             @Override
@@ -89,7 +108,14 @@ public class DoorLockView extends RelativeLayout{
                     case ACTION_UP:{
                         if (mEvent == EVENT_UP){
                             //rotate();
-                            mListener.onDoorLockPressed();
+                            if (mListener != null) {
+                                if (mState == DoorLockState.STATE_LOCK
+                                        || mState == DoorLockState.STATE_UNLOCK) {
+                                    mListener.onDoorLockPressed();
+                                } else {
+                                    mListener.onNoControl();
+                                }
+                            }
                         }
                         mEvent = EVENT_NORMAL;
 
@@ -101,26 +127,34 @@ public class DoorLockView extends RelativeLayout{
         });
     }
 
+
+
     public void setState(DoorLockState state) {
         this.mState = state;
         setDoorState(state);
         setColor(state);
     }
 
+    public void setOffline(){
+        this.mState = STATE_OFFLINE;
+        setColor(STATE_OFFLINE);
+    }
+
+    public DoorLockState getState(){
+        return mState;
+    }
 
     public void control(DoorLockState state) {
         this.mState = state;
         rotate();
     }
 
-
-
     private void setDoorState(DoorLockState state){
-        if (state == DoorLockState.STATE_LOCK || state == DoorLockState.STATE_CONTROL_CLOCK) {
+        if (state == DoorLockState.STATE_LOCK || state == DoorLockState.STATE_CONTROL_LOCK) {
             mIndicator.animate()
                     .rotation(90)
                     .start();
-        } else if (state == DoorLockState.STATE_UNLOCK || state == DoorLockState.STATE_CONTROL_UN_CLOCK){
+        } else if (state == DoorLockState.STATE_UNLOCK || state == DoorLockState.STATE_CONTROL_UNLOCK){
             mIndicator.animate()
                     .rotation(0)
                     .start();
@@ -185,22 +219,66 @@ public class DoorLockView extends RelativeLayout{
     }
     public interface DoorLockListener{
         void onDoorLockPressed();
+
+        void onNoControl();
     }
 
     private void rotate(){
         float rotation = mIndicator.getRotation();
-        if ((mState == DoorLockState.STATE_UNLOCK || mState == DoorLockState.STATE_CONTROL_UN_CLOCK) && rotation != 0.0f) {
+        if ((mState == DoorLockState.STATE_UNLOCK || mState == DoorLockState.STATE_CONTROL_UNLOCK) && rotation != 0.0f) {
             mIndicator.animate()
                     .rotation(0)
                     .setInterpolator(new AccelerateDecelerateInterpolator())
                     .setDuration(500)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            setColor(mState);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    })
                     .start();
             //green
-        } else if ((mState == DoorLockState.STATE_LOCK || mState == DoorLockState.STATE_CONTROL_CLOCK) && rotation != 90.f){
+        } else if ((mState == DoorLockState.STATE_LOCK || mState == DoorLockState.STATE_CONTROL_LOCK) && rotation != 90.f){
             mIndicator.animate()
                     .rotation(90)
                     .setInterpolator(new AccelerateDecelerateInterpolator())
                     .setDuration(500)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            setColor(mState);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    })
                     .start();
             //blue
         }

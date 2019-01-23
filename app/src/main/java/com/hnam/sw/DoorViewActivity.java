@@ -21,6 +21,11 @@ public class DoorViewActivity extends AppCompatActivity {
             public void onDoorLockPressed() {
                 Log.e(TAG, "Door pressed");
             }
+
+            @Override
+            public void onNoControl() {
+
+            }
         });
         view.setState(DoorLockState.STATE_LOCK);
 

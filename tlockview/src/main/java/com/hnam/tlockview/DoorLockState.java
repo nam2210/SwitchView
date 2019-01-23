@@ -6,7 +6,8 @@ package com.hnam.tlockview;
 public enum  DoorLockState {
     STATE_LOCK,
     STATE_UNLOCK,
-    STATE_CONTROL_CLOCK,
-    STATE_CONTROL_UN_CLOCK,
+    STATE_CONTROL_LOCK,
+    STATE_CONTROL_UNLOCK,
     STATE_JAM,
+    STATE_OFFLINE,
 }
