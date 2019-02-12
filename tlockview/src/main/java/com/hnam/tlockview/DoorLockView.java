@@ -161,6 +161,7 @@ public class DoorLockView extends RelativeLayout {
         this.mState = state;
         setDoorState(state);
         setColor(state);
+        runRipple(state);
     }
 
     public void setOffline() {
@@ -182,8 +183,12 @@ public class DoorLockView extends RelativeLayout {
         }
     }
 
-    private void runRipple(){
-
+    private void runRipple(DoorLockState state){
+        if (state == DoorLockState.STATE_CONTROL_LOCK || state == DoorLockState.STATE_CONTROL_UNLOCK){
+            rippleView.startRipple();
+        } else {
+            rippleView.stopRipple();
+        }
     }
 
     private void setDoorState(DoorLockState state) {
